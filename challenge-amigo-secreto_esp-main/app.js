@@ -10,6 +10,8 @@
 // Inicializamos la lista de amigos
 let listaAmigos = [];
 
+
+
 /**
  * Función reutilizable para asignar texto a un elemento HTML.
  * 
@@ -53,42 +55,44 @@ function agregarAmigo() {
     }
 }
 
-/**
- * Función para realizar el sorteo del amigo secreto.
- * 
- * Asigna un amigo secreto a cada participante, asegurando que no se asignen a sí mismos.
- */
+
 function sortearAmigo() {
-    // Verificamos que haya al menos dos amigos para realizar el sorteo
+    // Verificamos que haya al menos dos amigos
     if (listaAmigos.length < 2) {
         alert("Se necesitan al menos 2 amigos para el sorteo.");
         return;
     }
 
-    // Creamos una copia de la lista de amigos para trabajar con ella sin modificar la lista original
-    let copiaAmigos = [...listaAmigos];
-
-    // Inicializamos el objeto para almacenar los amigos secretos
+    // Creamos una copia de la lista de amigos
+    let amigosDisponibles = [];
+    for (let i = 0; i < listaAmigos.length; i++) {
+        amigosDisponibles[i] = listaAmigos[i];
+    }
+    
+    // Creamos un objeto vacío para guardar los resultados
     amigosSecretos = {};
 
-    // Iteramos sobre la lista de amigos para asignar un amigo secreto a cada uno
+    // Para cada amigo en la lista original
     for (let i = 0; i < listaAmigos.length; i++) {
-        // Seleccionamos un índice aleatorio de la lista de amigos
-        let indice = Math.floor(Math.random() * copiaAmigos.length);
-
-        // Nos aseguramos de que el amigo no se sortee a sí mismo
-        while (copiaAmigos[indice] === listaAmigos[i]) {
-            indice = Math.floor(Math.random() * copiaAmigos.length);
+        // Elegimos un amigo al azar de los disponibles
+        let indice = Math.floor(Math.random() * amigosDisponibles.length);
+        
+        // Guardamos quién le tocó a cada amigo
+        amigosSecretos[listaAmigos[i]] = amigosDisponibles[indice];
+        
+        // Creamos una nueva lista temporal sin el amigo seleccionado
+        let nuevaListaDisponibles = [];
+        for (let j = 0; j < amigosDisponibles.length; j++) {
+            if (j !== indice) {
+                nuevaListaDisponibles.push(amigosDisponibles[j]);
+            }
         }
-
-        // Asignamos el amigo secreto
-        amigosSecretos[listaAmigos[i]] = copiaAmigos[indice];
-
-        // Eliminamos el amigo sorteado de la copia para no repetirlo
-        copiaAmigos.splice(indice, 1);
+        
+        // Actualizamos la lista de amigos disponibles
+        amigosDisponibles = nuevaListaDisponibles;
     }
 
-    // Llamamos a la función para mostrar los resultados del sorteo
+    // Mostramos los resultados
     mostrarResultado();
 }
 
@@ -140,6 +144,39 @@ function adivinarAmigoSecreto() {
         alert("¡Incorrecto! El amigo secreto de " + amigo + " era " + amigosSecretos[amigo] + ".");
     }
 }
+
+
+
+/**
+ * Función para obtener un amigo secreto aleatorio de la lista
+ */
+function amigoSecretoIndividual() {
+    // Verificamos que haya amigos en la lista
+    if (listaAmigos.length < 2) {
+        alert("Se necesitan al menos 2 amigos en la lista");
+        return;
+    }
+
+    // Seleccionamos un índice aleatorio
+    let indice = Math.floor(Math.random() * listaAmigos.length);
+    
+    // Aseguramos que no me toque yo mismo como amigo secreto
+    let miNombre = document.getElementById('amigo').value;
+    while (listaAmigos[indice] === miNombre) {
+        indice = Math.floor(Math.random() * listaAmigos.length);
+    }
+
+    // Mostramos el amigo secreto seleccionado
+    asignarTextoElemento("#resultado", `Tu amigo secreto es: ${listaAmigos[indice]}`);
+    
+    // Limpiamos la caja de entrada
+    limpiarCaja();
+}
+
+
+
+
+
 
 /**
  * Función para reiniciar el juego.
